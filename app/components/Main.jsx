@@ -11,7 +11,8 @@ class Main extends Component {
 
         // set initial state
         this.state = {
-            search_term: ""
+            search_term: "",
+            scraped_articles: []
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -36,9 +37,14 @@ class Main extends Component {
     }
 
     scrape(searchTerm) {
-        axios.get('/scrape?q=' + searchTerm).then(function(response) {
+        console.log(this.state);
+        axios.get('/scrape?q=' + searchTerm).then((response) => {
             console.log(response.data);
-        }).catch(function(err){
+            var newArray = response.data;
+            this.setState({
+                scraped_articles: newArray
+            });
+        }).catch((err) => {
             console.log(err);
         });
     }
@@ -84,6 +90,36 @@ class Main extends Component {
                                     <button type="button" className="btn btn-default pull-right" id="clear-all"><i className="fa fa-trash"></i> Clear Results</button>
 
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/*<!-- This row will handle all of the retrieved jobs -->*/}
+                <div className="row">
+                    <div className="col-sm-12">
+                        <br/>
+
+                        {/*<!-- This panel will initially be made up of a panel and wells for each of the articles retrieved -->*/}
+                        <div className="panel panel-primary">
+
+                            {/*<!-- Panel Heading for the retrieved articles box -->*/}
+                            <div className="panel-heading">
+                                <h3 className="panel-title"><strong><i className="fa fa-table"></i>   Job Results</strong></h3>
+                            </div>
+
+                            {/*<!-- This main panel will hold each of the resulting articles -->*/}
+                            <div className="panel-body" id="well-section">
+                                { this.state.scraped_articles.length > 0 && 
+                                    this.state.scraped_articles.map(function(element, i){
+                                        return (
+                                            <div className="well" key={i}>
+                                                <a href={element.link}>
+                                                    {element.title}
+                                                </a>
+                                            </div>
+                                        );
+                                    })
+                                }
                             </div>
                         </div>
                     </div>
