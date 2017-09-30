@@ -1,6 +1,8 @@
 // imports React Component class
 import React, { Component } from 'react';
 
+import axios from 'axios';
+
 // declares Main component as ES6 class, which will be this file's export
 class Main extends Component {
 
@@ -9,10 +11,37 @@ class Main extends Component {
 
         // set initial state
         this.state = {
-            foo: "bar"
+            search_term: ""
         };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.scrape = this.scrape.bind(this);
     } // end of constructor
     
+    handleChange(event) {
+        this.setState({
+            search_term: event.target.value
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        var search = this.state.search_term;
+        this.setState({
+            search_term: ""
+        });
+        console.log(search);
+        this.scrape(search);
+    }
+
+    scrape(searchTerm) {
+        axios.get('/scrape?q=' + searchTerm).then(function(response) {
+            console.log(response.data);
+        }).catch(function(err){
+            console.log(err);
+        });
+    }
 
     // Here we describe this component's render method
     render() {
@@ -36,23 +65,18 @@ class Main extends Component {
                             <div className="panel-body">
 
                                 {/* Here we create an HTML Form for handling the inputs*/}
-                                <form role="form">
+                                <form role="form" onSubmit={this.handleSubmit}>
 
                                     {/* Here we create the text box for capturing the search term*/}
                                     <div className="form-group">
                                         <label htmlFor="search">Search Job Type:</label>
-                                        <input type="text" className="form-control" id="search-term"/>
-                                    </div>
-
-                                    {/* Here we capture the number of records that the user wants to retrieve  */}
-                                    <div className="form-group">
-                                        <label htmlFor="pwd">Number of Job Searches to Retrieve:</label>
-                                        <select className="form-control" id="num-records-select">
-                                            <option value="1">1</option>
-                                            {/* Setting the option for 5 as default */}
-                                            <option value="5" value>5</option>
-                                            <option value="10">10</option>
-                                        </select>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            name="search_term"
+                                            onChange={this.handleChange}
+                                            value={this.state.search_term}
+                                        />
                                     </div>
 
                                     {/* Here we have our final submit button */} 
