@@ -12,7 +12,8 @@ class Main extends Component {
         // set initial state
         this.state = {
             search_term: "",
-            scraped_articles: []
+            scraped_jobs: [],
+            saved_jobs: []
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -20,6 +21,17 @@ class Main extends Component {
         this.scrape = this.scrape.bind(this);
         this.handleSave = this.handleSave.bind(this);
     } // end of constructor
+
+    componentDidMount() {
+        axios.get('/saved/all').then(response => {
+            console.log(response.data);
+            this.setState({
+                saved_jobs: response.data
+            });
+        }).catch(err =>{
+            console.log(err);
+        });
+    }
     
     handleChange(event) {
         this.setState({
@@ -41,6 +53,11 @@ class Main extends Component {
         console.log(link, title);
         axios.post('/save', {job_link: link, job_name: title}).then(response => {
             console.log(response);
+            return axios.get('/saved/all');
+        }).then(response => {
+            this.setState({
+                saved_jobs: response.data
+            });
         }).catch(err => {
             console.log(err);
         });
@@ -52,7 +69,7 @@ class Main extends Component {
             console.log(response.data);
             var newArray = response.data;
             this.setState({
-                scraped_articles: newArray
+                scraped_jobs: newArray
             });
         }).catch((err) => {
             console.log(err);
@@ -97,7 +114,6 @@ class Main extends Component {
 
                                     {/* Here we have our final submit button */} 
                                     <button type="submit" className="btn btn-default pull-left" id="run-search"><i className="fa fa-search" aria-hidden="true"></i> Search</button>
-                                    <button type="button" className="btn btn-default pull-right" id="clear-all"><i className="fa fa-trash"></i> Clear Results</button>
 
                                 </form>
                             </div>
@@ -119,8 +135,8 @@ class Main extends Component {
 
                             {/*<!-- This main panel will hold each of the resulting articles -->*/}
                             <div className="panel-body" id="well-section">
-                                { this.state.scraped_articles.length > 0 && 
-                                    this.state.scraped_articles.map((element, i) => {
+                                { this.state.scraped_jobs.length > 0 && 
+                                    this.state.scraped_jobs.map((element, i) => {
                                         return (
                                             <div className="well" key={i}>
                                                 <a href={element.link}>
@@ -133,6 +149,36 @@ class Main extends Component {
                                                     Save Job
                                                 </button>
                                                 <div className="clearfix"></div>
+                                            </div>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/*<!-- This row will handle all of the saved jobs -->*/}
+                <div className="row">
+                    <div className="col-sm-12">
+                        <br/>
+
+                        {/*<!-- This panel will initially be made up of a panel and wells for each of the articles retrieved -->*/}
+                        <div className="panel panel-primary">
+
+                            {/*<!-- Panel Heading for the retrieved articles box -->*/}
+                            <div className="panel-heading">
+                                <h3 className="panel-title"><strong><i className="fa fa-table"></i>   Saved Jobs</strong></h3>
+                            </div>
+
+                            {/*<!-- This main panel will hold each of the resulting articles -->*/}
+                            <div className="panel-body" id="well-section">
+                                { this.state.saved_jobs.length > 0 && 
+                                    this.state.saved_jobs.map((element, i) => {
+                                        return (
+                                            <div className="well" key={i}>
+                                                <a href={element.job_link}>
+                                                    {element.job_name}
+                                                </a>
                                             </div>
                                         );
                                     })
