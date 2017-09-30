@@ -29,6 +29,7 @@ if (process.env.NODE_ENV !== 'production') {
         config = require('./webpack.dev.js');
     const compiler = webpack(config);
 
+
     // webpack-dev-middleware emits files compiled by webpack to a live server.
     // webpack-hot-middleware allows hot reload of webpack with express server (just refresh page).
     // more info about webpack-dev-middleware at:
@@ -48,9 +49,14 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 // Requiring our models for syncing
-// var db = require("./models");
-// console.log(db);
+var db = require('./models');
 
-app.listen(PORT, function() {
-    console.log("app is running on port", PORT);
-})
+// attempts to establish connection to mysql server
+db.sequelize.sync().then(function() {
+    // listens to port for running server
+    app.listen(PORT, function() {
+        console.log("app is running on port", PORT);
+    })
+}).catch(function(err) {
+    console.log('Error: Failed to establish connection with MySQL.');
+});
