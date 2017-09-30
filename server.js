@@ -16,18 +16,17 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 app.use(express.static("public"));
 
-// ============ Webpack Middleware Configurations (Development Only) ============
 // first checks to make sure NODE_ENV is in development mode (ie not production mode)
 if (process.env.NODE_ENV !== 'production') {
     console.log('NODE_ENV is in development mode.' +
         '\nConfiguring webpack-dev-middleware and webpack-hot-middleware...');
 
     // dependendies for webpack middleware
-    const webpack = require('webpack'),
+    var webpack = require('webpack'),
         webpackDevMiddleware = require('webpack-dev-middleware'),
         webpackHotMiddleware = require('webpack-hot-middleware'),
         config = require('./webpack.dev.js');
-    const compiler = webpack(config);
+    var compiler = webpack(config);
 
 
     // webpack-dev-middleware emits files compiled by webpack to a live server.
@@ -45,7 +44,6 @@ if (process.env.NODE_ENV !== 'production') {
         publicPath: config.output.publicPath
     }));
 }
-// ======================================================================================
 
 
 // Requiring our models for syncing
@@ -56,7 +54,8 @@ db.sequelize.sync().then(function() {
     // listens to port for running server
     app.listen(PORT, function() {
         console.log("app is running on port", PORT);
-    })
+        require('./controllers/api-routes.js')(app, db);
+    });
 }).catch(function(err) {
     console.log('Error: Failed to establish connection with MySQL.');
 });
