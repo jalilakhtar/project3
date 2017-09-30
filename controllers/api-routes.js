@@ -5,7 +5,13 @@ module.exports = function(app, db) {
 
     app.post('/save', function(req, res) {
         console.log(req.body);
-        res.json(req.body);
+        // res.json(req.body);
+        db.Job.create(req.body).then(function(data) {
+            console.log(data);
+            res.json(data);
+        }).catch(function(err) {
+            console.log(err);
+        });
     });
 
     app.get('/scrape', function(req, res) {
@@ -31,6 +37,15 @@ module.exports = function(app, db) {
                 }
             });
             res.json(dataArray);
+        });
+    });
+
+    app.get('/saved/all', function(req, res) {
+        db.Job.findAll().then(function(jobs) {
+            res.json(jobs);
+        }).catch(function(err) {
+            console.log(err);
+            res.json(err);
         });
     });
 };

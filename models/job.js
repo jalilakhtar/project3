@@ -11,14 +11,9 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false
         },
         job_link: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(1000),
             allowNull: false,
             unique: true
-        },
-        saved: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
         }
     });
     return Job;

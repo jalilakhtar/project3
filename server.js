@@ -57,5 +57,6 @@ db.sequelize.sync().then(function() {
         require('./controllers/api-routes.js')(app, db);
     });
 }).catch(function(err) {
+    console.log(err);
     console.log('Error: Failed to establish connection with MySQL.');
 });

@@ -18,6 +18,7 @@ class Main extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.scrape = this.scrape.bind(this);
+        this.handleSave = this.handleSave.bind(this);
     } // end of constructor
     
     handleChange(event) {
@@ -34,6 +35,15 @@ class Main extends Component {
         });
         console.log(search);
         this.scrape(search);
+    }
+
+    handleSave(link, title) {
+        console.log(link, title);
+        axios.post('/save', {job_link: link, job_name: title}).then(response => {
+            console.log(response);
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     scrape(searchTerm) {
@@ -110,12 +120,19 @@ class Main extends Component {
                             {/*<!-- This main panel will hold each of the resulting articles -->*/}
                             <div className="panel-body" id="well-section">
                                 { this.state.scraped_articles.length > 0 && 
-                                    this.state.scraped_articles.map(function(element, i){
+                                    this.state.scraped_articles.map((element, i) => {
                                         return (
                                             <div className="well" key={i}>
                                                 <a href={element.link}>
                                                     {element.title}
                                                 </a>
+                                                <button
+                                                    className="btn btn-info pull-right"
+                                                    onClick={() => this.handleSave(element.link, element.title)}
+                                                >
+                                                    Save Job
+                                                </button>
+                                                <div className="clearfix"></div>
                                             </div>
                                         );
                                     })
